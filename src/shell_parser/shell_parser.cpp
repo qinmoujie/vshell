@@ -249,7 +249,19 @@ bool Shell_parser::parser_if(qmj::memory_file &inf,
                 qmj::memory_file elif_inf(inf, if_start, abs_index);
                 if (__parser_imple(elif_inf, ouf) == false)
                     return false;
-                ouf.emplace_back(abs_index, V_SECOND, buf);
+                    
+                size_t elif_start = abs_index;
+                newline = buf;
+                for (; is_then(abs_index) == false; ++abs_index)
+                {
+                    if (inf.getline(buf) == false)
+                    {
+                        __error(elif_start, "not found 'then'");
+                        return false;
+                    }
+                    newline.append("\n").append(buf);
+                }
+                ouf.emplace_back(elif_start, V_FIRST, newline);
                 if_start = abs_index + 1;
             }
         }
@@ -266,7 +278,6 @@ bool Shell_parser::parser_if(qmj::memory_file &inf,
         }
         else if (is_fi(abs_index) == true)
         {
-
             if (--stk == 0)
             {
                 qmj::memory_file fi_inf(inf, if_start, abs_index);
@@ -413,7 +424,8 @@ bool Shell_parser::parser_case(qmj::memory_file &inf,
                 qmj::memory_file esac_inf(inf, case_start, abs_index);
                 if (__parser_imple(esac_inf, ouf) == false)
                     return false;
-                ouf.emplace_back(abs_index, V_FIRST, buf);
+                ouf.back().line.append("\n").append(buf);
+                //& ouf.emplace_back(abs_index, V_FIRST, buf);
                 return true;
             }
         }
@@ -481,7 +493,7 @@ bool Shell_parser::__parser_imple(qmj::memory_file &inf, outfile_type &ouf)
             }
             else
             {
-                ouf.emplace_back(cur_abs_index, NORMAL, buf);
+                ouf.emplace_back(cur_abs_index, V_FIRST, buf);
             }
         }
     }

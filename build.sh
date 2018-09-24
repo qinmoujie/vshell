@@ -4,6 +4,7 @@ CC=clang++
 PATH_PREFIX=$(pwd)
 
 OBJF="$PATH_PREFIX/src/main/vshell_main \
+    $PATH_PREFIX/src/format/out_format \
     $PATH_PREFIX/src/shell_parser/shell_parser \
     $PATH_PREFIX/src/shell_parser/shell_parser_base \
     $PATH_PREFIX/src/line_parser/line_parser \

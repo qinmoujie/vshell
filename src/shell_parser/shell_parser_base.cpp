@@ -24,7 +24,7 @@ void Shell_parser_base::__init()
     loop_v.push_back({"for", UNARY_DELIMITER});
     loop_v.push_back({"until", UNARY_DELIMITER});
     __file_parser();
-    //__print_file_line_parser();
+//@    __print_file_line_parser();
 }
 
 string Shell_parser_base::to_str(const char c) const
@@ -298,6 +298,8 @@ bool Shell_parser_base::__file_parser()
                 index_mask = TYPE_MASK(index_mask | THEN_MASK);
             if (__is_elif(index) == true)
                 index_mask = TYPE_MASK(index_mask | ELIF_MASK);
+            if (__is_else(index) == true)
+                index_mask = TYPE_MASK(index_mask | ELSE_MAKE);
             if (__is_fi(index) == true)
                 index_mask = TYPE_MASK(index_mask | FI_MASK);
 
@@ -319,7 +321,6 @@ bool Shell_parser_base::__file_parser()
             if (__is_esac(index) == true)
                 index_mask = TYPE_MASK(index_mask | ESAC_MASK);
         }
-        //@       std::cout << index << ":" << is_double_connect_line[index] << "|" << index_mask << "|" << buf << std::endl;
     }
     m_file.reopend();
     return true;
