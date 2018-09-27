@@ -60,13 +60,14 @@ int main(int argc, char *args[])
     //     }
     //     cout << ": " << of.line << endl;
     // }
-    
+
     vshell::FORMAT_MASK format = vshell::NO_FORMAT_MASK;
     format = FORMAT_MASK(format | DATE_MASK | TIME_MAKE | FILENAME_MASK | LINE_MASK | VAR_VALUE_SHOW_MASK);
     vshell::Out_format oformat(format, inf_pname);
     for (const auto &of : outf)
     {
-        cout << oformat.format_cmd(of.index, of.mode, of.line) << endl;
+        if (of.line.empty() != true)
+            ouf << oformat.format_cmd(of.index, of.mode, of.line) << endl;
     }
 
     inf.close();

@@ -15,11 +15,11 @@ void LineParser::__init_delimiter_set()
     binary_delimiter_v.push_back(make_pair("[[", "]]"));
     binary_delimiter_v.push_back(make_pair("[", "]"));
     binary_delimiter_v.push_back(make_pair("((", "))"));
-    //binary_delimiter_v.push_back(make_pair("(", ")"));
+    binary_delimiter_v.push_back(make_pair("(", ")"));
     binary_delimiter_v.push_back(make_pair("$(", ")"));
     binary_delimiter_v.push_back(make_pair("${", "}"));
     unary_delimiter_set.insert(';');
-    unary_delimiter_set.insert('=');
+  //  unary_delimiter_set.insert('=');
 }
 
 bool LineParser::is_unary_delimiter(const char word) const
@@ -77,6 +77,11 @@ bool LineParser::line_parser(const std::string &line,
                                                          false)) != line.size();
          start_pos = start)
     {
+        // for (deli_pos=start+1;deli_pos!=line.size();++deli_pos)
+        // {
+        //     for(auto iter=binary_delimiter)
+        //     if (line.substr(deli_pos,binary_delimiter))
+        // }
         for (auto iter = binary_delimiter_v.begin();
              iter != binary_delimiter_v.end(); ++iter)
         {

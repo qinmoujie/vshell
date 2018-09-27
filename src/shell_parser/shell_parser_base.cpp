@@ -19,12 +19,12 @@ Shell_parser_base::Shell_parser_base(const v_file_type &v_file)
 void Shell_parser_base::__init()
 {
     novshell_set.insert("");
-    novshell_set.insert("esac");
+    //   novshell_set.insert("esac");
     loop_v.push_back({"while", UNARY_DELIMITER});
     loop_v.push_back({"for", UNARY_DELIMITER});
     loop_v.push_back({"until", UNARY_DELIMITER});
     __file_parser();
-//@    __print_file_line_parser();
+    __print_file_line_parser();
 }
 
 string Shell_parser_base::to_str(const char c) const
@@ -133,7 +133,7 @@ string Shell_parser_base::trim(const std::string &line) const
 
 bool Shell_parser_base::__substr_equal(const string &line, const string &target) const
 {
-    return line.substr(0, target.size()) == target;
+    return trim(line).substr(0, target.size()) == target;
 }
 
 bool Shell_parser_base::__is_novshell(const std::string &line) const
@@ -217,7 +217,14 @@ bool Shell_parser_base::__is_in(const size_t index) const
 
 bool Shell_parser_base::__is_case_option(const size_t index) const
 {
-    return trim(m_file.get_absline(index)).back() == ')';
+    if (trim(m_file.get_absline(index)).back() != ')')
+        return false;
+    for (const p_word_type &p_w : vv_file_wrod[index])
+    {
+        if (p_w.first.back() == ')')
+            return true;
+    }
+    return false;
 }
 
 bool Shell_parser_base::__is_case_semic(const size_t index) const
@@ -254,7 +261,6 @@ bool Shell_parser_base::__file_parser()
             index_mask = TYPE_MASK(index_mask | DOUBLE_CONNECT_MASK);
             this->is_double_connect_line[index] = true;
         }
-
         line_word_type words;
         this->line_parser(buf, words);
         v_words_type v_words;

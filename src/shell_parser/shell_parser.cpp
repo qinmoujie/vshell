@@ -461,17 +461,8 @@ bool Shell_parser::__parser_imple(qmj::memory_file &inf, outfile_type &ouf)
         // }
         else
         {
-            if (is_double_connector(cur_abs_index) == true)
-            { // a cmd is multi line
-                if (parser_double_connector(inf, ouf, cur_abs_index, buf) == false)
-                    return false;
-            }
-            else if (is_one_connector(cur_abs_index) == true)
-            {
-                if (parser_one_connector(inf, ouf, cur_abs_index, buf) == false)
-                    return false;
-            }
-            else if (is_if(cur_abs_index))
+
+            if (is_if(cur_abs_index))
             {
                 if (parser_if(inf, ouf, cur_abs_index, buf) == false)
                     return false;
@@ -489,6 +480,16 @@ bool Shell_parser::__parser_imple(qmj::memory_file &inf, outfile_type &ouf)
             else if (is_loop(cur_abs_index) == true)
             {
                 if (parser_loop(inf, ouf, cur_abs_index, buf) == false)
+                    return false;
+            }
+            else if (is_double_connector(cur_abs_index) == true)
+            { // a cmd is multi line
+                if (parser_double_connector(inf, ouf, cur_abs_index, buf) == false)
+                    return false;
+            }
+            else if (is_one_connector(cur_abs_index) == true)
+            {
+                if (parser_one_connector(inf, ouf, cur_abs_index, buf) == false)
                     return false;
             }
             else
