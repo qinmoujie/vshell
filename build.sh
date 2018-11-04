@@ -33,8 +33,8 @@ function build_all()
         build_or_not $cppfile
         ofile="$ofile$cppfile.o "
     done
-    echo "clang++ -std=c++11 -o vshell $ofile"
-    clang++ -std=c++11 -o vshell $ofile
+    echo "$CC ++ -std=c++11 -o vshell $ofile"
+    $CC -std=c++11 -o vshell $ofile
     echo "done"
     set +e
 }
