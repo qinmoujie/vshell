@@ -249,7 +249,7 @@ bool Shell_parser::parser_if(qmj::memory_file &inf,
                 qmj::memory_file elif_inf(inf, if_start, abs_index);
                 if (__parser_imple(elif_inf, ouf) == false)
                     return false;
-                    
+
                 size_t elif_start = abs_index;
                 newline = buf;
                 for (; is_then(abs_index) == false; ++abs_index)
@@ -368,7 +368,8 @@ bool Shell_parser::parser_func(qmj::memory_file &inf,
         if (is_func_end(abs_index) == true)
         {
             qmj::memory_file func_file(inf, func_start_index, abs_index);
-            __parser_imple(func_file, ouf);
+            if (__parser_imple(func_file, ouf) == false)
+                return false;
             ouf.emplace_back(abs_index, V_FIRST, buf);
             return true;
         }
