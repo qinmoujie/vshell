@@ -24,7 +24,7 @@ void Shell_parser_base::__init()
     loop_v.push_back({"for", UNARY_DELIMITER});
     loop_v.push_back({"until", UNARY_DELIMITER});
     __file_parser();
-    __print_file_line_parser();
+//    __print_file_line_parser();
 }
 
 string Shell_parser_base::to_str(const char c) const

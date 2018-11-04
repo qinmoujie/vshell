@@ -1,6 +1,9 @@
 #/bin/bash
 
 CC=clang++
+if ! clang -v > /dev/null 2>&1;then
+    CC=g++
+fi
 PATH_PREFIX=$(pwd)
 
 OBJF="$PATH_PREFIX/src/main/vshell_main \
@@ -67,6 +70,7 @@ function install()
         build_all
     fi
     uninstall > /dev/null 2>&1
+    mkdir -p /usr/local/bin
     ln -s $PATH_PREFIX/vshell /usr/local/bin/vshell
     echo "vshell install done"
     set +e
