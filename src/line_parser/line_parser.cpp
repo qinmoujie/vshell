@@ -1,5 +1,5 @@
 #include "line_parser.h"
-
+#include <stack>
 namespace vshell
 {
 
@@ -14,19 +14,19 @@ void LineParser::__init_delimiter_set()
     binary_delimiter_v.push_back(make_pair("`", "`"));
     binary_delimiter_v.push_back(make_pair("[[", "]]"));
     binary_delimiter_v.push_back(make_pair("[", "]"));
+    binary_delimiter_v.push_back(make_pair("$((", "))"));
+    binary_delimiter_v.push_back(make_pair("$(", ")"));
     binary_delimiter_v.push_back(make_pair("((", "))"));
     binary_delimiter_v.push_back(make_pair("(", ")"));
-    binary_delimiter_v.push_back(make_pair("$(", ")"));
     binary_delimiter_v.push_back(make_pair("${", "}"));
+    binary_delimiter_v.push_back(make_pair("{", "}"));
     unary_delimiter_set.insert(';');
-  //  unary_delimiter_set.insert('=');
+    //  unary_delimiter_set.insert('=');
 }
 
 bool LineParser::is_unary_delimiter(const char word) const
 {
-    if (isspace(word))
-        return true;
-    return unary_delimiter_set.find(word) != unary_delimiter_set.end();
+    return (isspace(word) || unary_delimiter_set.find(word) != unary_delimiter_set.end());
 }
 
 size_t LineParser::find_unary_delimiter(const std::string &line,
@@ -39,69 +39,101 @@ size_t LineParser::find_unary_delimiter(const std::string &line,
     return start;
 }
 
-bool LineParser::parser_unary_delimiter_words(line_word_type &line_words,
-                                              const std::string &line,
-                                              size_t start, size_t end) const
+bool LineParser::is_binary_delimiter_start(const std::vector<std::string> &inf,
+                                           const size_t line_index, const size_t column_index,
+                                           delimiter_pair_type &delimiter_pair)
 {
-    for (size_t pos = start; pos != end;)
+    for (const delimiter_pair_type &dp : this->binary_delimiter_v)
     {
-        start = find_unary_delimiter(line, pos, end, true);
-        if (start != pos)
-            line_words.emplace_back(line.substr(pos, start - pos), UNARY_DELIMITER,
-                                    delimiter_pair_type("", ""));
-        pos = find_unary_delimiter(line, start, end, false);
-    }
-    return true;
-}
-
-size_t LineParser::parser_binary_delimiter_words(line_word_type &line_words,
-                                                 const std::string &line,
-                                                 size_t start, size_t end,
-                                                 const delimiter_pair_type
-                                                     &binary_delimiter) const
-{
-    size_t pos = start;
-    start = start + binary_delimiter.first.size();
-    if ((pos = line.find(binary_delimiter.second, start)) >= end)
-        return 0;
-    line_words.emplace_back(line.substr(start, pos - start),
-                            BINARY_DELIMITER, binary_delimiter);
-    return (pos + binary_delimiter.second.size());
-}
-
-bool LineParser::line_parser(const std::string &line,
-                             line_word_type &line_words) const
-{
-    size_t start_pos = 0, deli_pos = 0;
-    for (size_t start = 0; (start = find_unary_delimiter(line, start, line.size(),
-                                                         false)) != line.size();
-         start_pos = start)
-    {
-        // for (deli_pos=start+1;deli_pos!=line.size();++deli_pos)
-        // {
-        //     for(auto iter=binary_delimiter)
-        //     if (line.substr(deli_pos,binary_delimiter))
-        // }
-        for (auto iter = binary_delimiter_v.begin();
-             iter != binary_delimiter_v.end(); ++iter)
+        if (dp.first.size() + line_index <= inf[line_index].size())
         {
-            if ((deli_pos = line.find(iter->first, start)) != std::string::npos)
+            if (inf[line_index].substr(column_index, dp.first.size()) == dp.first)
             {
-                if ((start = parser_binary_delimiter_words(
-                         line_words, line, deli_pos, line.size(), *iter)) == 0)
-                    return false;
-                break;
+                delimiter_pair = dp;
+                return true;
             }
         }
-        if (deli_pos == std::string::npos)
-        {
-            deli_pos = line.size();
-            parser_unary_delimiter_words(line_words, line, start_pos, deli_pos);
-            return true;
-        }
-        parser_unary_delimiter_words(line_words, line, start_pos, deli_pos);
     }
-    return true;
+    return false;
+}
+
+bool LineParser::line_parser(const std::vector<std::string> &inf,
+                             std::vector<line_word_type> &ouf)
+{
+
+    stack<std::pair<delimiter_pair_type, point_type>> delimiter_stk;
+    size_t line_index = 0, column_index = 0;
+    delimiter_pair_type delimiter_pair;
+    for (;;)
+    {
+        if (delimiter_stk.empty())
+        {
+            for (;;)
+            {
+                if (column_index == inf[line_index].size())
+                {
+                    column_index = 0;
+                    line_index += 1;
+                }
+                if (line_index >= inf.size())
+                    return true;
+                if (is_binary_delimiter_start(inf, line_index, column_index, delimiter_pair))
+                {
+                    line_index += delimiter_pair.first.size();
+                    delimiter_stk.push(make_pair(std::move(delimiter_pair), std::move(make_pair(line_index, column_index))));
+                    break;
+                }
+            }
+        }
+        else
+        {
+            if (delimiter_stk.top().first.first == "\"")
+            {
+                for (;;)
+                {
+                    if (column_index == inf[line_index].size())
+                    {
+                        column_index = 0;
+                        line_index += 1;
+                    }
+                    if (line_index >= inf.size())
+                    {
+                        return false;
+                    }
+                    if (inf[line_index][column_index] == '"')
+                    {
+                        line_index += 1;
+                        delimiter_stk.pop();
+                        break;
+                    }
+                }
+            }
+            else if (delimiter_stk.top().first.first == "\'")
+            {
+                for (;;)
+                {
+                    if (column_index == inf[line_index].size())
+                    {
+                        column_index = 0;
+                        line_index += 1;
+                    }
+                    if (line_index >= inf.size())
+                    {
+                        return false;
+                    }
+                    if (inf[line_index][column_index] == '\'')
+                    {
+                        line_index += 1;
+                        delimiter_stk.pop();
+                        break;
+                    }
+                }
+            }
+            else
+            {
+            }
+        }
+    }
 }
 
 } // namespace vshell

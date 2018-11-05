@@ -15,6 +15,7 @@ enum DELIMITER_TYPE
 {
     UNARY_DELIMITER,
     BINARY_DELIMITER,
+    ENABLE_PRINT_VAR,
 };
 
 struct Word_type
@@ -22,8 +23,10 @@ struct Word_type
     Word_type(const std::string &value, const DELIMITER_TYPE deli_type,
               const std::pair<std::string, std::string> &delimiter)
         : value(value), deli_type(deli_type), delimiter(delimiter) {}
+    typedef std::pair<size_t, size_t> point_type;
 
     std::string value;
+    point_type point;
     DELIMITER_TYPE deli_type;
     std::pair<std::string, std::string> delimiter;
 };
@@ -32,11 +35,26 @@ class LineParser
 {
   public:
     typedef std::pair<std::string, std::string> delimiter_pair_type;
+    typedef Word_type::point_type point_type;
     typedef std::vector<Word_type> line_word_type;
 
     // default constructor
     LineParser();
 
+    bool line_parser(const std::vector<std::string> &inf,
+                     std::vector<line_word_type> &ouf);
+
+  protected:
+    // set of binary delimiter
+    std::vector<delimiter_pair_type> binary_delimiter_v;
+
+    std::vector<delimiter_pair_type> variable_delimiter_v;
+    // set of unary delimiter
+    std::unordered_set<char> unary_delimiter_set;
+
+    std::vector<bool> is_double_connect_line;
+
+  private:
     // @return @word is or not a unary delimiter word
     bool is_unary_delimiter(const char word) const;
 
@@ -47,33 +65,11 @@ class LineParser
                                 size_t start, size_t end,
                                 bool is_unary) const;
 
-    // parser [@start,@end) of @line delimit by unary delimiter
-    // and insert @line_words
-    // @return ture if success, else return false
-    bool parser_unary_delimiter_words(line_word_type &line_words,
-                                      const std::string &line,
-                                      size_t start, size_t end) const;
+    bool is_binary_delimiter_start(const std::vector<std::string> &inf,
+                                   const size_t line_index, const size_t column_index,
+                                   delimiter_pair_type &delimiter_pair);
 
-    // parser [@start,@end) of @line delimit
-    // by binary delimiter @binary_delimiter
-    // and insert @line_words
-    // @return pos if success, else return 0
-    size_t parser_binary_delimiter_words(line_word_type &line_words,
-                                         const std::string &line,
-                                         size_t start, size_t end,
-                                         const delimiter_pair_type
-                                             &binary_delimiter) const;
-    // parser @line and insert @line_words
-    // @return ture if success, else return false
-    bool line_parser(const std::string &line, line_word_type &line_words) const;
 
-  protected:
-    // set of binary delimiter
-    std::vector<delimiter_pair_type> binary_delimiter_v;
-    // set of unary delimiter
-    std::unordered_set<char> unary_delimiter_set;
-
-  private:
     // insert unary and binary delimiter word
     void __init_delimiter_set();
 };
