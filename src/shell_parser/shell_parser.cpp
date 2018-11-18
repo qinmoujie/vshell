@@ -514,7 +514,7 @@ bool Shell_parser::__mask(const size_t index, const TYPE_MASK t_mask) const
 
 void Shell_parser::__error(const size_t index, const string &messages) const
 {
-    cerr << ":" << to_string(index + 1) << " error: " << messages << endl;
+    cerr << "vshell:" << to_string(index + 1) << " error: " << messages << endl;
 }
 
 } // namespace vshell
