@@ -67,7 +67,7 @@ int main(int argc, char *args[])
     for (const auto &of : outf)
     {
         if (of.line.empty() != true)
-            ouf << oformat.format_cmd(of.index, of.mode, of.line) << endl;
+            ouf << oformat.format_cmd(of.index+1, of.mode, of.line) << endl;
     }
 
     inf.close();
