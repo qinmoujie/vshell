@@ -45,7 +45,7 @@ bool LineParser::is_binary_delimiter_start(const std::vector<std::string> &inf,
 {
     for (const delimiter_pair_type &dp : this->binary_delimiter_v)
     {
-        if (dp.first.size() + line_index <= inf[line_index].size())
+        if (dp.first.size() + column_index <= inf[line_index].size())
         {
             if (inf[line_index].substr(column_index, dp.first.size()) == dp.first)
             {
@@ -60,7 +60,6 @@ bool LineParser::is_binary_delimiter_start(const std::vector<std::string> &inf,
 bool LineParser::line_parser(const std::vector<std::string> &inf,
                              std::vector<line_word_type> &ouf)
 {
-
     stack<std::pair<delimiter_pair_type, point_type>> delimiter_stk;
     size_t line_index = 0, column_index = 0;
     delimiter_pair_type delimiter_pair;
@@ -79,7 +78,7 @@ bool LineParser::line_parser(const std::vector<std::string> &inf,
                     return true;
                 if (is_binary_delimiter_start(inf, line_index, column_index, delimiter_pair))
                 {
-                    line_index += delimiter_pair.first.size();
+                    column_index += delimiter_pair.first.size();
                     delimiter_stk.push(make_pair(std::move(delimiter_pair), std::move(make_pair(line_index, column_index))));
                     break;
                 }
@@ -131,6 +130,40 @@ bool LineParser::line_parser(const std::vector<std::string> &inf,
             }
             else
             {
+                for (;;)
+                {
+                    if (column_index == inf[line_index].size())
+                    {
+                        column_index = 0;
+                        line_index += 1;
+                    }
+                    if (line_index >= inf.size())
+                    {
+                        return false;
+                    }
+                    if (is_binary_delimiter_start(inf, line_index, column_index, delimiter_pair))
+                    {
+                        column_index += delimiter_pair.first.size();
+                        delimiter_stk.push(make_pair(std::move(delimiter_pair), std::move(make_pair(line_index, column_index))));
+                        break;
+                    }
+                    else
+                    {
+                        const string &delimiter_stk_top_close = delimiter_stk.top().first.second;
+                        if (delimiter_stk_top_close.size() + column_index <= inf[line_index].size())
+                        {
+                            if (inf[line_index].substr(column_index, delimiter_stk_top_close.size()) == delimiter_stk_top_close)
+                            {
+                                column_index += delimiter_stk_top_close.size();
+                                delimiter_stk.pop();
+                                break;
+                            }
+                        }
+                        else
+                        {
+                        }
+                    }
+                }
             }
         }
     }
