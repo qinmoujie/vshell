@@ -77,11 +77,6 @@ bool LineParser::line_parser(const std::string &line,
                                                          false)) != line.size();
          start_pos = start)
     {
-        // for (deli_pos=start+1;deli_pos!=line.size();++deli_pos)
-        // {
-        //     for(auto iter=binary_delimiter)
-        //     if (line.substr(deli_pos,binary_delimiter))
-        // }
         for (auto iter = binary_delimiter_v.begin();
              iter != binary_delimiter_v.end(); ++iter)
         {

@@ -17,12 +17,6 @@ int main(int argc, char *args[])
         cout << "Open error: " << inf_pname << endl;
         return 1;
     }
-    ouf.open(outfilename);
-    if (!ouf)
-    {
-        cout << "Open error: " << outfilename << endl;
-        return 1;
-    }
 
     using namespace vshell;
     vector<string> v_file;
@@ -64,6 +58,12 @@ int main(int argc, char *args[])
     vshell::FORMAT_MASK format = vshell::NO_FORMAT_MASK;
     format = FORMAT_MASK(format | DATE_MASK | TIME_MAKE | FILENAME_MASK | LINE_MASK | VAR_VALUE_SHOW_MASK);
     vshell::Out_format oformat(format, inf_pname);
+    ouf.open(outfilename);
+    if (!ouf)
+    {
+        cout << "Open error: " << outfilename << endl;
+        return 1;
+    }
     for (const auto &of : outf)
     {
         if (of.line.empty() != true)

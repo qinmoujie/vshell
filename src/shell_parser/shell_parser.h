@@ -118,6 +118,11 @@ class Shell_parser : public Shell_parser_base
                               const size_t start_index,
                               string &buf);
 
+    bool parser_vshell(qmj::memory_file &inf,
+                       outfile_type &ouf,
+                       const size_t start_index,
+                       string &buf);
+
     bool parser_double_connector(qmj::memory_file &inf,
                                  outfile_type &ouf,
                                  const size_t start_index,

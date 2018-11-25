@@ -160,7 +160,7 @@ bool Shell_parser::parser_vshell_ignore(qmj::memory_file &inf,
         ouf.emplace_back(abs_index, NORMAL, buf);
         if (inf.getline(buf) == false)
         {
-            __error(start_index, "not found vshell end tag");
+            __error(start_index, "not found vshell ignore end tag");
             return false;
         }
         abs_index += 1;
@@ -313,7 +313,6 @@ bool Shell_parser::parser_loop(qmj::memory_file &inf,
     }
     ouf.emplace_back(start_index, V_FIRST, newline);
 
-    //&   cout << start_index + 1 << ":" << newline << endl;
     size_t stk = 1;
     for (size_t loop_start = (++abs_index); inf.getline(buf); abs_index = inf.get_absindex())
     {
@@ -335,7 +334,6 @@ bool Shell_parser::parser_loop(qmj::memory_file &inf,
         else
         {
         }
-        //&       cout << abs_index + 1 << "|stk:" << stk << "|" << buf << std::endl;
     }
     __error(start_index, "not found 'done'");
     return false;
@@ -438,6 +436,35 @@ bool Shell_parser::parser_case(qmj::memory_file &inf,
     return false;
 }
 
+bool Shell_parser::parser_vshell(qmj::memory_file &inf,
+                                 outfile_type &ouf,
+                                 const size_t start_index,
+                                 string &buf)
+{
+    size_t abs_index = start_index;
+    string vshell_line;
+    ouf.emplace_back(abs_index, NORMAL, buf);
+    for (;;)
+    {
+        if (inf.getline(buf) == false)
+        {
+            __error(start_index, "not found vshell end tag");
+            return false;
+        }
+        abs_index += 1;
+        if (is_vshell_end_tag(abs_index) == true)
+            break;
+        vshell_line.append(buf).append("\n");
+    }
+    if (!vshell_line.empty())
+    {
+        vshell_line.pop_back();
+        ouf.emplace_back(abs_index, V_FIRST, vshell_line);
+    }
+    ouf.emplace_back(abs_index, NORMAL, buf);
+    return true;
+}
+
 bool Shell_parser::__parser_imple(qmj::memory_file &inf, outfile_type &ouf)
 {
     inf.reopend();
@@ -451,18 +478,18 @@ bool Shell_parser::__parser_imple(qmj::memory_file &inf, outfile_type &ouf)
                 if (parser_vshell_ignore(inf, ouf, cur_abs_index, buf) == false)
                     return false;
             }
+            else if (is_vshell_start_tag(cur_abs_index) == true)
+            {
+                if (parser_vshell(inf, ouf, cur_abs_index, buf) == false)
+                    return false;
+            }
             else
             {
                 ouf.emplace_back(cur_abs_index, NORMAL, buf);
             }
         }
-        // else if (is_novshell(cur_abs_index) == true)
-        // {
-        //     ouf.emplace_back(cur_abs_index, NORMAL, buf);
-        // }
         else
         {
-
             if (is_if(cur_abs_index))
             {
                 if (parser_if(inf, ouf, cur_abs_index, buf) == false)
