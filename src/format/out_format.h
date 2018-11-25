@@ -4,7 +4,7 @@
 #include <string>
 
 #include "../shell_parser/shell_parser.h"
-
+#include "../../lib/command.h"
 namespace vshell
 {
 
@@ -24,9 +24,11 @@ class Out_format
   public:
     Out_format(FORMAT_MASK format_mask, const std::string &filename = "");
 
-    std::string format_cmd(const size_t index, OUT_MODE out_mode, const std::string &cmd);
+    bool format_out(const std::string &out_file_name, const vshell::Shell_parser::outfile_type &outf);
 
   private:
+    std::string format_cmd(const size_t index, OUT_MODE out_mode, const std::string &cmd);
+
     bool __is_printf_date() const;
 
     bool __is_printf_time() const;
@@ -44,7 +46,7 @@ class Out_format
     std::string __format_show_var(const size_t index, OUT_MODE out_mode, const std::string &cmd);
 
     std::string __show_var_imple(const size_t pre_len, const std::string &cmd,
-                                 char delimiter,const std::string newdel) const;
+                                 char delimiter, const std::string newdel) const;
 
     std::string __get_filename_form_path(const string &path);
 

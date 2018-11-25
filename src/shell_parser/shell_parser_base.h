@@ -38,7 +38,7 @@ enum TYPE_MASK
     DO_MASK = 0x00200000,
     DONE_MASK = 0x00400000,
     CASE_MASK = 0x00800000,
-    
+
     IN_MASK = 0x01000000,
     CASE_OPTION_MASK = 0x02000000,
     CASE_SEMIC_MASK = 0x04000000,
@@ -151,6 +151,12 @@ class Shell_parser_base : public LineParser
 
     // Preliminary parsing of the entire file
     bool __file_parser();
+
+  protected:
+    const std::string vshell_ignore_start_tag = "##vshell_ignore_start";
+    const std::string vshell_ignore_end_tag = "##vshell_ignore_end";
+    const std::string vshell_start_tag = "##vshell_start_tag";
+    const std::string vshell_end_tag = "##vshell_end_tag";
 
   protected:
     qmj::memory_file m_file;

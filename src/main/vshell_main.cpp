@@ -6,26 +6,13 @@ using namespace std;
 
 int main(int argc, char *args[])
 {
-    string inf_pname, outfilename, filename;
-    inf_pname = string(args[1]);
-    outfilename = string(args[2]);
-    ifstream inf;
-    ofstream ouf;
-    inf.open(inf_pname);
-    if (!inf)
-    {
-        cout << "Open error: " << inf_pname << endl;
-        return 1;
-    }
-
     using namespace vshell;
+    string input_file_name(args[1]), output_file_name(args[2]);
     vector<string> v_file;
-    string buf;
-    while (getline(inf, buf))
-        v_file.emplace_back(std::move(buf));
-
+    if (vshell::trans_file_to_vector(input_file_name, v_file) == false)
+        return 1;
     vshell::Shell_parser::outfile_type outf;
-    vshell::Shell_parser sh_parser(v_file);
+    vshell::Shell_parser sh_parser(v_file, input_file_name);
     try
     {
         if (sh_parser.parser(outf) == false)
@@ -39,20 +26,8 @@ int main(int argc, char *args[])
 
     vshell::FORMAT_MASK format = vshell::NO_FORMAT_MASK;
     format = FORMAT_MASK(format | DATE_MASK | TIME_MAKE | FILENAME_MASK | LINE_MASK | VAR_VALUE_SHOW_MASK);
-    vshell::Out_format oformat(format, inf_pname);
-    ouf.open(outfilename);
-    if (!ouf)
-    {
-        cout << "Open error: " << outfilename << endl;
+    vshell::Out_format oformat(format, input_file_name);
+    if (oformat.format_out(output_file_name, outf) == false)
         return 1;
-    }
-    for (const auto &of : outf)
-    {
-        if (of.line.empty() != true)
-            ouf << oformat.format_cmd(of.index+1, of.mode, of.line) << endl;
-    }
-
-    inf.close();
-    ouf.close();
     return 0;
 }

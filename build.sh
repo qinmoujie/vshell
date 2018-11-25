@@ -11,7 +11,8 @@ OBJF="$PATH_PREFIX/src/main/vshell_main \
     $PATH_PREFIX/src/shell_parser/shell_parser \
     $PATH_PREFIX/src/shell_parser/shell_parser_base \
     $PATH_PREFIX/src/line_parser/line_parser \
-    $PATH_PREFIX/lib/memory_file "
+    $PATH_PREFIX/lib/memory_file  \
+    $PATH_PREFIX/lib/command "
 
 function build_or_not()
 {

@@ -24,7 +24,7 @@ void Shell_parser_base::__init()
     loop_v.push_back({"for", UNARY_DELIMITER});
     loop_v.push_back({"until", UNARY_DELIMITER});
     __file_parser();
-//    __print_file_line_parser();
+    //    __print_file_line_parser();
 }
 
 string Shell_parser_base::to_str(const char c) const
@@ -70,22 +70,22 @@ bool Shell_parser_base::__is_commentary(const string &line) const
 
 bool Shell_parser_base::__is_vshell_ignore_start(const string &line) const
 {
-    return __substr_equal(line, "##vshell_ignore_start");
+    return __substr_equal(line, this->vshell_ignore_start_tag);
 }
 
 bool Shell_parser_base::__is_vshell_ignore_end(const string &line) const
 {
-    return __substr_equal(line, "##vshell_ignore_end");
+    return __substr_equal(line, this->vshell_ignore_end_tag);
 }
 
 bool Shell_parser_base::__is_vshell_start_tag(const string &line) const
 {
-    return __substr_equal(line, "##vshell_start_tag");
+    return __substr_equal(line, this->vshell_start_tag);
 }
 
 bool Shell_parser_base::__is_vshell_end_tag(const string &line) const
 {
-    return __substr_equal(line, "##vshell_end_tag");
+    return __substr_equal(line, this->vshell_end_tag);
 }
 
 bool Shell_parser_base::__is_double_connector(const string &line)

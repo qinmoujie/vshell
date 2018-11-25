@@ -3,7 +3,8 @@
 namespace vshell
 {
 
-Shell_parser::Shell_parser(const v_file_type &v_file) : base_type(v_file) {}
+Shell_parser::Shell_parser(const v_file_type &v_file, const string &input_file_name)
+    : base_type(v_file), input_file_name(input_file_name) {}
 
 // return true if @line is a commentary
 bool Shell_parser::is_commentary(const size_t index) const
@@ -159,10 +160,9 @@ bool Shell_parser::parser_vshell_ignore(qmj::memory_file &inf,
     {
         ouf.emplace_back(abs_index, NORMAL, buf);
         if (inf.getline(buf) == false)
-        {
-            __error(start_index, "not found vshell ignore end tag");
-            return false;
-        }
+            return __file_line_error(start_index,
+                                     "not found '" +
+                                         this->vshell_ignore_end_tag + "'");
         abs_index += 1;
     } while (is_vshell_ignore_end(abs_index) == false);
     ouf.emplace_back(abs_index, NORMAL, buf);
@@ -179,10 +179,7 @@ bool Shell_parser::parser_double_connector(qmj::memory_file &inf,
     do
     {
         if (inf.getline(buf) == false)
-        {
-            __error(start_index, "double connector not close");
-            return false;
-        }
+            return __file_line_error(start_index, "double connector not close");
         abs_index += 1;
         newline.append("\n").append(buf);
     } while (is_double_connector(abs_index) == true);
@@ -203,10 +200,7 @@ bool Shell_parser::parser_one_connector(qmj::memory_file &inf,
     do
     {
         if (inf.getline(buf) == false)
-        {
-            __error(abs_index, "too many one conector");
-            return false;
-        }
+            return __file_line_error(abs_index, "too many one conector");
         abs_index += 1;
         newline.append("\n").append(buf);
     } while (is_one_connector(abs_index) == true);
@@ -227,10 +221,7 @@ bool Shell_parser::parser_if(qmj::memory_file &inf,
     for (; is_then(abs_index) == false; ++abs_index)
     {
         if (inf.getline(buf) == false)
-        {
-            __error(start_index, "not found 'then'");
-            return false;
-        }
+            return __file_line_error(start_index, "not found 'then'");
         newline.append("\n").append(buf);
     }
     ouf.emplace_back(start_index, V_FIRST, newline);
@@ -255,10 +246,7 @@ bool Shell_parser::parser_if(qmj::memory_file &inf,
                 for (; is_then(abs_index) == false; ++abs_index)
                 {
                     if (inf.getline(buf) == false)
-                    {
-                        __error(elif_start, "not found 'then'");
-                        return false;
-                    }
+                        return __file_line_error(elif_start, "not found 'then'");
                     newline.append("\n").append(buf);
                 }
                 ouf.emplace_back(elif_start, V_FIRST, newline);
@@ -291,8 +279,7 @@ bool Shell_parser::parser_if(qmj::memory_file &inf,
         {
         }
     }
-    __error(start_index, "not found 'fi'");
-    return false;
+    return __file_line_error(start_index, "not found 'fi'");
 }
 
 bool Shell_parser::parser_loop(qmj::memory_file &inf,
@@ -305,10 +292,7 @@ bool Shell_parser::parser_loop(qmj::memory_file &inf,
     for (; is_do(abs_index) == false; abs_index += 1)
     {
         if (inf.getline(buf) == false)
-        {
-            __error(start_index, "not found 'do'");
-            return false;
-        }
+            return __file_line_error(start_index, "not found 'do'");
         newline.append("\n").append(buf);
     }
     ouf.emplace_back(start_index, V_FIRST, newline);
@@ -335,8 +319,7 @@ bool Shell_parser::parser_loop(qmj::memory_file &inf,
         {
         }
     }
-    __error(start_index, "not found 'done'");
-    return false;
+    return __file_line_error(start_index, "not found 'done'");
 }
 
 bool Shell_parser::parser_func(qmj::memory_file &inf,
@@ -351,10 +334,7 @@ bool Shell_parser::parser_func(qmj::memory_file &inf,
         do
         {
             if (inf.getline(buf) == false)
-            {
-                __error(start_index, "not found {");
-                return false;
-            }
+                return __file_line_error(start_index, "not found '{'");
             abs_index += 1;
             newline.append("\n").append(buf);
         } while (is_func_start(abs_index) == false);
@@ -372,8 +352,7 @@ bool Shell_parser::parser_func(qmj::memory_file &inf,
             return true;
         }
     }
-    __error(start_index, "not found }");
-    return false;
+    return __file_line_error(start_index, "not found '}'");
 }
 
 bool Shell_parser::parser_case(qmj::memory_file &inf,
@@ -386,10 +365,7 @@ bool Shell_parser::parser_case(qmj::memory_file &inf,
     for (; is_in(abs_index) == false; abs_index = inf.get_absindex())
     {
         if (inf.getline(buf) == false)
-        {
-            __error(start_index, "not found 'in'");
-            return false;
-        }
+            return __file_line_error(start_index, "not found 'in'");
         newline.append("\n").append(buf);
     }
     ouf.emplace_back(start_index, V_FIRST, newline);
@@ -432,8 +408,7 @@ bool Shell_parser::parser_case(qmj::memory_file &inf,
         {
         }
     }
-    __error(start_index, "not found 'esac'");
-    return false;
+    return __file_line_error(start_index, "not found 'esac'");
 }
 
 bool Shell_parser::parser_vshell(qmj::memory_file &inf,
@@ -447,10 +422,7 @@ bool Shell_parser::parser_vshell(qmj::memory_file &inf,
     for (;;)
     {
         if (inf.getline(buf) == false)
-        {
-            __error(start_index, "not found vshell end tag");
-            return false;
-        }
+            return __file_line_error(start_index, "not found '" + this->vshell_end_tag);
         abs_index += 1;
         if (is_vshell_end_tag(abs_index) == true)
             break;
@@ -539,9 +511,9 @@ bool Shell_parser::__mask(const size_t index, const TYPE_MASK t_mask) const
     return (this->file_mask[index] & t_mask) != ZERO_MASK;
 }
 
-void Shell_parser::__error(const size_t index, const string &messages) const
+bool Shell_parser::__file_line_error(const size_t index, const string &messages) const
 {
-    cerr << "vshell:" << to_string(index + 1) << " error: " << messages << endl;
+    return vshell_error::file_line_error(input_file_name, index + 1, messages);
 }
 
 } // namespace vshell

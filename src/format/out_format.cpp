@@ -16,6 +16,20 @@ Out_format::Out_format(FORMAT_MASK format_mask, const string &path)
     __set_printf_base();
 }
 
+bool Out_format::format_out(const string &out_file_name,
+                            const vshell::Shell_parser::outfile_type &outf)
+{
+    ofstream ouf(out_file_name);
+    if (!ouf)
+        return vshell_error::open_error(out_file_name);
+    for (const auto &of : outf)
+    {
+        if (!of.line.empty())
+            ouf << format_cmd(of.index + 1, of.mode, of.line) << endl;
+    }
+    return true;
+}
+
 string Out_format::format_cmd(const size_t index,
                               OUT_MODE out_mode,
                               const string &cmd)

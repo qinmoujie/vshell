@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 #include "shell_parser_base.h"
+#include "../../lib/command.h"
 
 namespace vshell
 {
@@ -38,7 +39,7 @@ class Shell_parser : public Shell_parser_base
     typedef base_type::v_words_type v_words_type;
     typedef vector<Out_info> outfile_type;
 
-    Shell_parser(const v_file_type &v_file);
+    Shell_parser(const v_file_type &v_file, const std::string &input_file_name);
 
     // return true if @line is a commentary
     bool is_commentary(const size_t index) const;
@@ -159,9 +160,12 @@ class Shell_parser : public Shell_parser_base
     // @return true if @index line has @t_mask
     bool __mask(const size_t index, const TYPE_MASK t_mask) const;
 
-    void __error(const size_t index, const string &messages) const;
+    bool __file_line_error(const size_t index, const string &messages) const;
 
     bool __parser_imple(qmj::memory_file &inf, outfile_type &ouf);
+
+  private:
+    const std::string input_file_name;
 };
 
 } // namespace vshell
