@@ -37,24 +37,6 @@ int main(int argc, char *args[])
         return 2;
     }
 
-    // for (const auto &of : outf)
-    // {
-    //     cout << to_string(of.index) << "|";
-    //     if (of.mode == NORMAL)
-    //     {
-    //         cout << "NORMAL";
-    //     }
-    //     else if (of.mode == V_FIRST)
-    //     {
-    //         cout << "V_FIRST";
-    //     }
-    //     else if (of.mode == V_SECOND)
-    //     {
-    //         cout << "V_SECOND";
-    //     }
-    //     cout << ": " << of.line << endl;
-    // }
-
     vshell::FORMAT_MASK format = vshell::NO_FORMAT_MASK;
     format = FORMAT_MASK(format | DATE_MASK | TIME_MAKE | FILENAME_MASK | LINE_MASK | VAR_VALUE_SHOW_MASK);
     vshell::Out_format oformat(format, inf_pname);

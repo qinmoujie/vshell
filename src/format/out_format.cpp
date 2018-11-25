@@ -44,7 +44,8 @@ string Out_format::__format_show_var(const size_t index,
         .append("s")
         .append(this->color_postfix);
     size_t printf_prefix_len = this->printf_base_prefix_len +
-                               this->line_delimiter.size() + this->line_max_len;
+                               this->line_delimiter.size() +
+                               this->line_max_len + 1;
     string printf_postfix(this->printf_base_postfix);
     printf_postfix.append(" \"")
         .append(to_string(index))
@@ -81,7 +82,7 @@ string Out_format::__show_var_imple(const size_t pre_len,
     string result;
     result.reserve(cmd.size());
     string space_str("\n");
-    space_str.append(string(this->printf_base_prefix_len, ' '));
+    space_str.append(string(pre_len, ' '));
     if (!cmd.empty())
     {
         if (cmd[0] == delimiter)
