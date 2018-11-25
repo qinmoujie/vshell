@@ -4,9 +4,9 @@ namespace vshell
 {
 using namespace std;
 
-Out_format::Out_format(FORMAT_MASK format_mask, const string &filename)
+Out_format::Out_format(FORMAT_MASK format_mask, const string &path)
     : format_mask(format_mask),
-      filename(filename),
+      filename(__get_filename_form_path(path)),
       printf_base_prefix("printf \""),
       printf_base_prefix_len(0),
       printf_base_postfix(""),
@@ -21,6 +21,13 @@ string Out_format::format_cmd(const size_t index,
                               const string &cmd)
 {
     return __format_show_var(index, out_mode, cmd);
+}
+
+string Out_format::__get_filename_form_path(const string &path)
+{
+    size_t start_pos = path.find_last_of('/');
+    start_pos = start_pos == string::npos ? 0 : start_pos + 1;
+    return path.substr(start_pos);
 }
 
 string Out_format::__format_show_var(const size_t index,

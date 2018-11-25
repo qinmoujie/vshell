@@ -46,6 +46,8 @@ class Out_format
     std::string __show_var_imple(const size_t pre_len, const std::string &cmd,
                                  char delimiter,const std::string newdel) const;
 
+    std::string __get_filename_form_path(const string &path);
+
   private:
     std::string date_delimiter;
     std::string date_color_prefix;
