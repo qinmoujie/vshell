@@ -1,4 +1,5 @@
 #include "shell_parser.h"
+#include "../../lib/command.h"
 
 namespace vshell
 {

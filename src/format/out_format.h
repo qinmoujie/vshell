@@ -4,7 +4,6 @@
 #include <string>
 
 #include "../shell_parser/shell_parser.h"
-#include "../../lib/command.h"
 namespace vshell
 {
 
@@ -17,6 +16,7 @@ enum FORMAT_MASK
     LINE_MASK = 0x00000080,
     VAR_VALUE_SHOW_MASK = 0x00000100,
     VAR_VALUE_OUT_MASK = 0x00000200,
+    VERSION_MAKE = 0x00000400,
 };
 
 class Out_format
@@ -48,7 +48,7 @@ class Out_format
     std::string __show_var_imple(const size_t pre_len, const std::string &cmd,
                                  char delimiter, const std::string newdel) const;
 
-    std::string __get_filename_form_path(const string &path);
+    std::string __get_filename_form_path(const std::string &path);
 
   private:
     std::string date_delimiter;

@@ -1,5 +1,5 @@
 #include "out_format.h"
-
+#include "../../lib/command.h"
 namespace vshell
 {
 using namespace std;
@@ -51,26 +51,31 @@ string Out_format::__format_show_var(const size_t index,
     if (out_mode == NORMAL)
         return (cmd);
     string printf_prefix(this->printf_base_prefix);
-    printf_prefix.append(this->line_delimiter)
-        .append(this->line_color_prefix)
-        .append("%-")
-        .append(to_string(this->line_max_len))
-        .append("s")
-        .append(this->color_postfix);
+    string printf_postfix(this->printf_base_postfix);
+    
+    if (__is_printf_line() == true)
+    {
+        printf_prefix.append(this->line_delimiter)
+            .append(this->line_color_prefix)
+            .append("%-")
+            .append(to_string(this->line_max_len))
+            .append("s")
+            .append(this->color_postfix);
+
+        printf_postfix.append(" \"")
+            .append(to_string(index))
+            .append("\"");
+    }
+
     size_t printf_prefix_len = this->printf_base_prefix_len +
                                this->line_delimiter.size() +
                                this->line_max_len + 1;
-    string printf_postfix(this->printf_base_postfix);
-    printf_postfix.append(" \"")
-        .append(to_string(index))
-        .append("\"");
 
     printf_prefix.append(this->cmd_delimter)
         .append(this->cmd_color_prefix)
         .append("%s")
         .append(this->color_postfix)
         .append("\n\"");
-
     string cmd_show_var = __show_var_imple(printf_prefix_len, cmd, '"', "\\\"");
     printf_postfix.append(" ").append(cmd_show_var);
 

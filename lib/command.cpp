@@ -41,4 +41,53 @@ bool trans_file_to_vector(const string &filename, vector<string> &v_file)
     return true;
 }
 
+int parse_cmdline_options(int argc, char **args, string &input_file,
+                           string &output_file, FORMAT_MASK &format)
+{
+    int opt;
+    static struct option long_options[] =
+        {
+            {"version", no_argument, NULL, 'V'},
+            {"date", no_argument, NULL, 'd'},
+            {"filename", no_argument, NULL, 'f'},
+            {"line", no_argument, NULL, 'l'},
+            {"input-file", required_argument, NULL, 'i'},
+            {"output-file", required_argument, NULL, 'o'},
+            {"time", no_argument, NULL, 't'},
+        };
+    for (; (opt = getopt_long(argc, args, "Vdfli:o:t", long_options, NULL)) != -1;)
+    {
+        switch (opt)
+        {
+        case 'V':
+            cout << "vshell 1.0.0" << endl;
+            return 1;
+            break;
+        case 'd':
+            format = FORMAT_MASK(format | DATE_MASK);
+            break;
+        case 'f':
+            format = FORMAT_MASK(format | FILENAME_MASK);
+            break;
+        case 'l':
+            format = FORMAT_MASK(format | LINE_MASK);
+            break;
+        case 'i':
+            input_file = string(optarg);
+            break;
+        case 'o':
+            output_file = string(optarg);
+            break;
+        case 't':
+            format = FORMAT_MASK(format | TIME_MAKE);
+            break;
+        default:
+            cout << "???" << endl;
+            return -1;
+            break;
+        }
+    }
+    return 0;
+}
+
 } // namespace vshell

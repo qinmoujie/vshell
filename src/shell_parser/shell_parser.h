@@ -5,7 +5,6 @@
 #include <unordered_map>
 
 #include "shell_parser_base.h"
-#include "../../lib/command.h"
 
 namespace vshell
 {

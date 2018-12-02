@@ -1,8 +1,14 @@
+#ifndef _VSHELL_COMMOND_
+#define _VSHELL_COMMOND_
+
 #include <iostream>
 #include <string>
 #include <vector>
 #include <fstream>
 
+#include <getopt.h>
+
+#include "../src/format/out_format.h"
 namespace vshell
 {
 namespace vshell_error
@@ -21,4 +27,9 @@ bool open_error(const std::string &filename);
 bool trans_file_to_vector(const std::string &filename,
                           std::vector<std::string> &v_file);
 
+int parse_cmdline_options(int argc, char **args, std::string &input_file,
+                           std::string &output_file, FORMAT_MASK &format);
+
 } // namespace vshell
+
+#endif

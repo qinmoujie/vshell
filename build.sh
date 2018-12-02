@@ -27,14 +27,13 @@ function build_or_not()
 function build_all()
 {
     set -e
-
     ofile=""
     for cppfile in $OBJF;
     do
         build_or_not $cppfile
         ofile="$ofile$cppfile.o "
     done
-    echo "$CC ++ -std=c++11 -o vshell $ofile"
+    echo "$CC -std=c++11 -o vshell $ofile"
     $CC -std=c++11 -o vshell $ofile
     echo "done"
     set +e
