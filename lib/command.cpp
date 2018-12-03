@@ -1,3 +1,5 @@
+#include <iomanip>
+
 #include "command.h"
 
 using namespace std;
@@ -41,8 +43,40 @@ bool trans_file_to_vector(const string &filename, vector<string> &v_file)
     return true;
 }
 
+void print_help()
+{
+    cout.flags(ios::left);
+    const size_t max_long_option_length = 25;
+    cout
+        << "    -V " << setw(max_long_option_length) << " --version"
+        << "Show version number"
+        << "\n"
+        << "    -d " << setw(max_long_option_length) << " --date"
+        << "Add date of run command in out shell file"
+        << "\n"
+        << "    -f " << setw(max_long_option_length) << " --filename"
+        << "For each command Add the filename which it belong to in out shell file"
+        << "\n"
+        << "    -h " << setw(max_long_option_length) << " --help"
+        << "Print this help text"
+        << "\n"
+        << "    -l " << setw(max_long_option_length) << " --line"
+        << "Add line number of command in input file to out shell file"
+        << "\n"
+        << "    -i " << setw(max_long_option_length) << " --input-file <file>"
+        << "Input file name to vshell"
+        << "\n"
+        << "    -o " << setw(max_long_option_length) << " --output-file <file>"
+        << "Output file name from vshell"
+        << "\n"
+        << "    -t " << setw(max_long_option_length) << " --time"
+        << "Add time of run command in out shell file"
+        << "\n"
+        << endl;
+}
+
 int parse_cmdline_options(int argc, char **args, string &input_file,
-                           string &output_file, FORMAT_MASK &format)
+                          string &output_file, FORMAT_MASK &format)
 {
     int opt;
     static struct option long_options[] =
@@ -50,12 +84,13 @@ int parse_cmdline_options(int argc, char **args, string &input_file,
             {"version", no_argument, NULL, 'V'},
             {"date", no_argument, NULL, 'd'},
             {"filename", no_argument, NULL, 'f'},
+            {"help", no_argument, NULL, 'h'},
             {"line", no_argument, NULL, 'l'},
             {"input-file", required_argument, NULL, 'i'},
             {"output-file", required_argument, NULL, 'o'},
             {"time", no_argument, NULL, 't'},
         };
-    for (; (opt = getopt_long(argc, args, "Vdfli:o:t", long_options, NULL)) != -1;)
+    for (; (opt = getopt_long(argc, args, "Vdfhli:o:t", long_options, NULL)) != -1;)
     {
         switch (opt)
         {
@@ -68,6 +103,10 @@ int parse_cmdline_options(int argc, char **args, string &input_file,
             break;
         case 'f':
             format = FORMAT_MASK(format | FILENAME_MASK);
+            break;
+        case 'h':
+            print_help();
+            return 1;
             break;
         case 'l':
             format = FORMAT_MASK(format | LINE_MASK);

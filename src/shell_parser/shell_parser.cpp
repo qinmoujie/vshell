@@ -423,7 +423,7 @@ bool Shell_parser::parser_vshell(qmj::memory_file &inf,
     for (;;)
     {
         if (inf.getline(buf) == false)
-            return __file_line_error(start_index, "not found '" + this->vshell_end_tag);
+            return __file_line_error(start_index, "not found '" + this->vshell_end_tag + "'");
         abs_index += 1;
         if (is_vshell_end_tag(abs_index) == true)
             break;
