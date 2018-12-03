@@ -1,3 +1,5 @@
+#include <sys/stat.h>
+
 #include "out_format.h"
 #include "../../lib/command.h"
 namespace vshell
@@ -27,6 +29,9 @@ bool Out_format::format_out(const string &out_file_name,
         if (!of.line.empty())
             ouf << format_cmd(of.index + 1, of.mode, of.line) << endl;
     }
+    ouf.close();
+    if (chmod(out_file_name.c_str(), S_IRUSR | S_IWUSR | S_IRGRP | S_IXUSR | S_IXGRP | S_IROTH | S_IXOTH) == -1)
+        return vshell_error::error("chmod " + out_file_name + "executeable mode fail");
     return true;
 }
 
@@ -52,7 +57,7 @@ string Out_format::__format_show_var(const size_t index,
         return (cmd);
     string printf_prefix(this->printf_base_prefix);
     string printf_postfix(this->printf_base_postfix);
-    
+
     if (__is_printf_line() == true)
     {
         printf_prefix.append(this->line_delimiter)
