@@ -48,6 +48,10 @@ void print_help()
     cout.flags(ios::left);
     const size_t max_long_option_length = 25;
     cout
+        << "Usage: vshell [OPTIONS] -i <'inputfile'>"
+        << "\n\n"
+        << "OPTIONS:"
+        << "\n"
         << "    -V " << setw(max_long_option_length) << " --version"
         << "Show version number"
         << "\n"
