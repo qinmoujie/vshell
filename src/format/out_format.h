@@ -17,6 +17,8 @@ enum FORMAT_MASK
     VAR_VALUE_SHOW_MASK = 0x00000100,
     VAR_VALUE_OUT_MASK = 0x00000200,
     VERSION_MAKE = 0x00000400,
+    FORCE_MAKE = 0x00000800,
+    RUN_MAKE = 0x00001000,
 };
 
 class Out_format
@@ -25,6 +27,10 @@ class Out_format
     Out_format(FORMAT_MASK format_mask, const std::string &filename = "");
 
     bool format_out(const std::string &out_file_name, const vshell::Shell_parser::outfile_type &outf);
+
+    static bool is_force_option(const FORMAT_MASK format);
+
+    static bool is_run_option(const FORMAT_MASK format);
 
   private:
     std::string format_cmd(const size_t index, OUT_MODE out_mode, const std::string &cmd);
@@ -36,6 +42,8 @@ class Out_format
     bool __is_printf_filename() const;
 
     bool __is_printf_line() const;
+
+    static bool __format_mask(FORMAT_MASK format, FORMAT_MASK mask);
 
     bool __format_mask(FORMAT_MASK mask) const;
 

@@ -27,8 +27,11 @@ bool open_error(const std::string &filename);
 bool trans_file_to_vector(const std::string &filename,
                           std::vector<std::string> &v_file);
 
-int parse_cmdline_options(int argc, char **args, std::string &input_file,
-                           std::string &output_file, FORMAT_MASK &format);
+int parse_cmdline_options(int argc, char **args,
+                          std::vector<std::string> &input_files,
+                          std::string &output_file, FORMAT_MASK &format);
+
+bool shell_run(const std::string &cmdstrs);
 
 } // namespace vshell
 

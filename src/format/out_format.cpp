@@ -154,9 +154,24 @@ bool Out_format::__is_printf_line() const
     return __format_mask(LINE_MASK);
 }
 
+bool Out_format::is_force_option(const FORMAT_MASK format)
+{
+    return __format_mask(format, FORCE_MAKE);
+}
+
+bool Out_format::is_run_option(const FORMAT_MASK format)
+{
+    return __format_mask(format, RUN_MAKE);
+}
+
+bool Out_format::__format_mask(FORMAT_MASK format, FORMAT_MASK mask)
+{
+    return (format & mask) != NO_FORMAT_MASK;
+}
+
 bool Out_format::__format_mask(FORMAT_MASK mask) const
 {
-    return (this->format_mask & mask) != NO_FORMAT_MASK;
+    return __format_mask(this->format_mask, mask);
 }
 
 void Out_format::__set_config()
