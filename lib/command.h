@@ -13,7 +13,12 @@ namespace vshell
 {
 namespace vshell_error
 {
+
+void __print_error_message(const std::string &error_message);
+
 bool error(const std::string &error_messages);
+
+int int_error(const std::string &error_message);
 
 bool file_line_error(const std::string &filename,
                      const size_t line_index,
@@ -31,7 +36,11 @@ int parse_cmdline_options(int argc, char **args,
                           std::vector<std::string> &input_files,
                           std::string &output_file, FORMAT_MASK &format);
 
-bool shell_run(const std::string &cmdstrs);
+std::string get_abs_workepath();
+
+std::string trans_relative_path_to_abs(const std::string &file);
+
+int run_shell(const std::string &cmdstrs);
 
 } // namespace vshell
 

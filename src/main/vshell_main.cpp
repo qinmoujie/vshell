@@ -1,4 +1,3 @@
-
 #include "../shell_parser/shell_parser.h"
 #include "../format/out_format.h"
 #include "../../lib/command.h"
@@ -49,7 +48,7 @@ bool vshell_files(const vector<string> &input_files,
 int main(int argc, char *argv[])
 {
     vector<string> input_files;
-    string output_file = "a.sh";
+    string output_file = "./a.sh";
     vshell::FORMAT_MASK format = vshell::VAR_VALUE_SHOW_MASK;
     int cmd_res = parse_cmdline_options(argc, argv, input_files, output_file, format);
     if (cmd_res == 0)
@@ -77,6 +76,8 @@ int main(int argc, char *argv[])
             {
                 if (vshell_file(input_files.front(), output_file, format) == false)
                     return 1;
+                if (Out_format::is_run_option(format) == true)
+                    return run_shell(trans_relative_path_to_abs(output_file));
                 return 0;
             }
         }

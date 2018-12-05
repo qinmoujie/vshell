@@ -1,16 +1,32 @@
 #include <iomanip>
 #include <stdlib.h>
 
+#include <stdio.h>
+#include <unistd.h>
+#define MAXBUFSIZE 1024
+
 #include "command.h"
 
 using namespace std;
 
 namespace vshell
 {
-bool vshell_error::error(const string &error_messages)
+
+void vshell_error::__print_error_message(const string &error_message)
 {
-    std::cerr << "vshell: error: " + error_messages << std::endl;
+    cerr << "vshell: error: " + error_message << endl;
+}
+
+bool vshell_error::error(const string &error_message)
+{
+    __print_error_message(error_message);
     return false;
+}
+
+int vshell_error::int_error(const string &error_message)
+{
+    __print_error_message(error_message);
+    return 1;
 }
 
 bool vshell_error::line_error(const size_t line_index, const string &error_messages)
@@ -133,9 +149,9 @@ int parse_cmdline_options(int argc, char **argv, vector<string> &input_files,
         case 'o':
             output_file = string(optarg);
             break;
-        // case 'r':
-        //     output_file = string(optarg);
-        //     break;
+        case 'r':
+            format = FORMAT_MASK(format | RUN_MAKE);
+            break;
         // case 's':
         //     output_file = string(optarg);
         //     break;
@@ -157,7 +173,20 @@ int parse_cmdline_options(int argc, char **argv, vector<string> &input_files,
     return 0;
 }
 
-bool shell_run(const std::string &cmdstrs)
+string get_abs_workepath()
+{
+    char abs_workpath[MAXBUFSIZE];
+    return getcwd(abs_workpath, MAXBUFSIZE);
+}
+
+string trans_relative_path_to_abs(const string &file)
+{
+    if (file.front() == '/')
+        return file;
+    return get_abs_workepath() + "/" + file;
+}
+
+int run_shell(const string &cmdstrs)
 {
     int maxline = 100;
     char line[maxline];
@@ -166,22 +195,22 @@ bool shell_run(const std::string &cmdstrs)
 
     if ((fpin = popen(cmdstrs.c_str(), "r")) == NULL)
     {
-        return vshell_error::error("popen error");
+        return vshell_error::int_error("popen error");
     }
     for (;;)
     {
-        fputs("vshell>>> ", stdout);
+        fputs("\033[2;3;34m=> \033[0m", stdout);
         fflush(stdout);
         if (fgets(line, maxline, fpin) == NULL)
             break;
         if (fputs(line, stdout) == EOF)
         {
-            return vshell_error::error("fputs error\n");
+            return vshell_error::int_error("fputs error\n");
         }
     }
     if ((ret = pclose(fpin)) == -1)
     {
-        return vshell_error::error("pclose error\n");
+        return vshell_error::int_error("pclose error\n");
     }
     return ret;
 }
