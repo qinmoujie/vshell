@@ -226,6 +226,8 @@ bool Shell_parser::parser_if(qmj::memory_file &inf,
         newline.append("\n").append(buf);
     }
     ouf.emplace_back(start_index, V_FIRST, newline);
+    if (is_fi(abs_index) == true)
+        return true;
 
     size_t stk = 1;
     for (size_t if_start = (++abs_index); inf.getline(buf); abs_index = inf.get_absindex())
@@ -234,7 +236,7 @@ bool Shell_parser::parser_if(qmj::memory_file &inf,
         {
             stk += 1;
         }
-        else if (is_elif(abs_index) == true)
+        if (is_elif(abs_index) == true)
         {
             if (stk == 1)
             {
@@ -254,7 +256,7 @@ bool Shell_parser::parser_if(qmj::memory_file &inf,
                 if_start = abs_index + 1;
             }
         }
-        else if (is_else(abs_index) == true)
+        if (is_else(abs_index) == true)
         {
             if (stk == 1)
             {
@@ -265,7 +267,7 @@ bool Shell_parser::parser_if(qmj::memory_file &inf,
                 if_start = abs_index + 1;
             }
         }
-        else if (is_fi(abs_index) == true)
+        if (is_fi(abs_index) == true)
         {
             if (--stk == 0)
             {
