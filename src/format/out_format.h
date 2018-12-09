@@ -19,11 +19,16 @@ enum FORMAT_MASK
     VERSION_MAKE = 0x00000400,
     FORCE_MAKE = 0x00000800,
     RUN_MAKE = 0x00001000,
+    PIPELINE_MAKE = 0x00002000,
+    OUTPUTFILE_MASK = 0x00004000,
 };
 
 class Out_format
 {
   public:
+    static std::string stdin_infile;
+    static std::string stdin_outfile;
+
     Out_format(FORMAT_MASK format_mask, const std::string &filename = "");
 
     bool format_out(const std::string &out_file_name, const vshell::Shell_parser::outfile_type &outf);
@@ -31,6 +36,10 @@ class Out_format
     static bool is_force_option(const FORMAT_MASK format);
 
     static bool is_run_option(const FORMAT_MASK format);
+
+    static bool is_outfile_option(const FORMAT_MASK format);
+
+    static bool is_pipeline_option(const FORMAT_MASK format);
 
   private:
     std::string format_cmd(const size_t index, OUT_MODE out_mode, const std::string &cmd);

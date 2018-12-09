@@ -6,6 +6,9 @@ namespace vshell
 {
 using namespace std;
 
+std::string Out_format::stdin_infile = "stdin";
+std::string Out_format::stdin_outfile = "./.stdin.sh";
+
 Out_format::Out_format(FORMAT_MASK format_mask, const string &path)
     : format_mask(format_mask),
       filename(__get_filename_form_path(path)),
@@ -162,6 +165,16 @@ bool Out_format::is_force_option(const FORMAT_MASK format)
 bool Out_format::is_run_option(const FORMAT_MASK format)
 {
     return __format_mask(format, RUN_MAKE);
+}
+
+bool Out_format::is_outfile_option(const FORMAT_MASK format)
+{
+    return __format_mask(format, OUTPUTFILE_MASK);
+}
+
+bool Out_format::is_pipeline_option(const FORMAT_MASK format)
+{
+    return __format_mask(format, PIPELINE_MAKE);
 }
 
 bool Out_format::__format_mask(FORMAT_MASK format, FORMAT_MASK mask)

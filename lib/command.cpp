@@ -1,11 +1,11 @@
 #include <iomanip>
 #include <stdlib.h>
-
-#include <stdio.h>
+#include <cstdio>
 #include <unistd.h>
-#define MAXBUFSIZE 1024
 
 #include "command.h"
+
+#define MAXBUFSIZE 1024
 
 using namespace std;
 
@@ -46,18 +46,27 @@ bool vshell_error::open_error(const string &filename)
     return error("open error: " + filename);
 }
 
-bool trans_file_to_vector(const string &filename, vector<string> &v_file)
+istream &trans_istream_to_vector(istream &inf, vector<string> &v_file)
 {
-    ifstream inf(filename);
-    if (!inf)
-        return vshell_error::open_error(filename);
     vector<string> temp_file;
     string buf;
     for (; getline(inf, buf);)
         temp_file.emplace_back(std::move(buf));
     v_file.swap(temp_file);
+    if (inf.bad())
+        vshell_error::__print_error_message("failed to get vector file from istream");
+    return inf;
+}
+
+bool trans_file_to_vector(const string &filename, vector<string> &v_file)
+{
+    ifstream inf(filename);
+    if (!inf)
+        return vshell_error::open_error(filename);
+    bool ret = true;
+    ret = (!trans_istream_to_vector(inf, v_file).bad());
     inf.close();
-    return true;
+    return ret;
 }
 
 void print_help()
@@ -90,11 +99,11 @@ void print_help()
         << "    -o " << setw(max_long_option_length) << " --output-file <file>"
         << "Output shell file name from vshell"
         << "\n"
+        << "    -p " << setw(max_long_option_length) << " --pipeline"
+        << "Get inputs from pipeline or standard input"
+        << "\n"
         << "    -r " << setw(max_long_option_length) << " --run"
         << "Run out shell script or commands from vshell"
-        << "\n"
-        << "    -s " << setw(max_long_option_length) << " --string"
-        << "Specify a string as inputs"
         << "\n"
         << "    -t " << setw(max_long_option_length) << " --time"
         << "Add time of run command in out shell file"
@@ -120,12 +129,12 @@ int parse_cmdline_options(int argc, char **argv, vector<string> &input_files,
             {"help", no_argument, NULL, 'h'},
             {"line", no_argument, NULL, 'l'},
             {"output-file", required_argument, NULL, 'o'},
+            {"pipeline", no_argument, NULL, 'p'},
             {"run", no_argument, NULL, 'r'},
-            {"string", no_argument, NULL, 's'},
             {"time", no_argument, NULL, 't'},
             {0, 0, 0, 0},
         };
-    for (; (opt = getopt_long(argc, argv, "Vdfhlo:rs:t", long_options, NULL)) != -1;)
+    for (; (opt = getopt_long(argc, argv, "Vdfhlo:prt", long_options, NULL)) != -1;)
     {
         switch (opt)
         {
@@ -148,13 +157,15 @@ int parse_cmdline_options(int argc, char **argv, vector<string> &input_files,
             break;
         case 'o':
             output_file = string(optarg);
+            Out_format::stdin_outfile = output_file;
+            format = FORMAT_MASK(format | OUTPUTFILE_MASK);
+            break;
+        case 'p':
+            format = FORMAT_MASK(format | PIPELINE_MAKE);
             break;
         case 'r':
             format = FORMAT_MASK(format | RUN_MAKE);
             break;
-        // case 's':
-        //     output_file = string(optarg);
-        //     break;
         case 't':
             format = FORMAT_MASK(format | TIME_MAKE);
             break;
@@ -188,7 +199,7 @@ string trans_relative_path_to_abs(const string &file)
 
 int run_shell(const string &cmdstrs)
 {
-    int maxline = 100;
+    int maxline = 10000;
     char line[maxline];
     FILE *fpin;
     int ret;
@@ -199,7 +210,7 @@ int run_shell(const string &cmdstrs)
     }
     for (;;)
     {
-        fputs("\033[2;3;34m=> \033[0m", stdout);
+        fputs("\033[2;3;34m > \033[0m", stdout);
         fflush(stdout);
         if (fgets(line, maxline, fpin) == NULL)
             break;
