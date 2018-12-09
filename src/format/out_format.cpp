@@ -14,8 +14,7 @@ Out_format::Out_format(FORMAT_MASK format_mask, const string &path)
       filename(__get_filename_form_path(path)),
       printf_base_prefix("printf \""),
       printf_base_prefix_len(0),
-      printf_base_postfix(""),
-      color_postfix("\\033[0m")
+      printf_base_postfix("")
 {
     __set_config();
     __set_printf_base();
@@ -159,12 +158,17 @@ bool Out_format::__is_printf_line() const
 
 bool Out_format::is_force_option(const FORMAT_MASK format)
 {
-    return __format_mask(format, FORCE_MAKE);
+    return __format_mask(format, FORCE_MASK);
 }
 
 bool Out_format::is_run_option(const FORMAT_MASK format)
 {
-    return __format_mask(format, RUN_MAKE);
+    return __format_mask(format, RUN_MASK);
+}
+
+bool Out_format::is_nocolor_option(const FORMAT_MASK format)
+{
+    return __format_mask(format, NOCOLOR_MASK);
 }
 
 bool Out_format::is_outfile_option(const FORMAT_MASK format)
@@ -174,7 +178,7 @@ bool Out_format::is_outfile_option(const FORMAT_MASK format)
 
 bool Out_format::is_pipeline_option(const FORMAT_MASK format)
 {
-    return __format_mask(format, PIPELINE_MAKE);
+    return __format_mask(format, PIPELINE_MASK);
 }
 
 bool Out_format::__format_mask(FORMAT_MASK format, FORMAT_MASK mask)
@@ -190,25 +194,30 @@ bool Out_format::__format_mask(FORMAT_MASK mask) const
 void Out_format::__set_config()
 {
     this->date_delimiter = "|";
-    this->date_color_prefix = "\\033[2;3;36m";
 
     this->time_delimiter = " ";
-    this->time_color_prefix = "\\033[2;3;36m";
 
     this->filename_delimiter = "|";
-    this->filename_color_prefix = "\\033[2;3;34m";
 
     this->line_delimiter = ":";
-    this->line_color_prefix = "\\033[2;3;34m";
     this->line_max_len = 6;
 
     this->cmd_delimter = "|";
-    this->cmd_color_prefix = "\\033[1;2;3m";
 
     this->var_deliter = "->";
-    this->var_color_prefix = "\\033[2;3;34m";
     this->single_var_max_len = 10;
     this->total_var_max_num = 3;
+
+    if (is_nocolor_option(this->format_mask) == false)
+    {
+        this->date_color_prefix = "\\033[2;3;36m";
+        this->time_color_prefix = "\\033[2;3;36m";
+        this->filename_color_prefix = "\\033[2;3;34m";
+        this->line_color_prefix = "\\033[2;3;34m";
+        this->cmd_color_prefix = "\\033[1;2;3m";
+        this->var_color_prefix = "\\033[2;3;34m";
+        this->color_postfix = "\\033[0m";
+    }
 }
 
 void Out_format::__set_printf_base()

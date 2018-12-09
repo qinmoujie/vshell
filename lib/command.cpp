@@ -96,6 +96,9 @@ void print_help()
         << "    -l " << setw(max_long_option_length) << " --line"
         << "Add line number of command in input file to out shell file"
         << "\n"
+        << "       " << setw(max_long_option_length) << " --no-color"
+        << "Not add color to out shell file"
+        << "\n"
         << "    -o " << setw(max_long_option_length) << " --output-file <file>"
         << "Output shell file name from vshell"
         << "\n"
@@ -114,6 +117,7 @@ void print_help()
 enum OPTIONS_NUMBER
 {
     FORCE_OPTION,
+    NO_COLOR_OPTION,
 };
 
 int parse_cmdline_options(int argc, char **argv, vector<string> &input_files,
@@ -128,6 +132,7 @@ int parse_cmdline_options(int argc, char **argv, vector<string> &input_files,
             {"force", no_argument, NULL, FORCE_OPTION},
             {"help", no_argument, NULL, 'h'},
             {"line", no_argument, NULL, 'l'},
+            {"no-color", no_argument, NULL, NO_COLOR_OPTION},
             {"output-file", required_argument, NULL, 'o'},
             {"pipeline", no_argument, NULL, 'p'},
             {"run", no_argument, NULL, 'r'},
@@ -161,16 +166,19 @@ int parse_cmdline_options(int argc, char **argv, vector<string> &input_files,
             format = FORMAT_MASK(format | OUTPUTFILE_MASK);
             break;
         case 'p':
-            format = FORMAT_MASK(format | PIPELINE_MAKE);
+            format = FORMAT_MASK(format | PIPELINE_MASK);
             break;
         case 'r':
-            format = FORMAT_MASK(format | RUN_MAKE);
+            format = FORMAT_MASK(format | RUN_MASK);
             break;
         case 't':
             format = FORMAT_MASK(format | TIME_MAKE);
             break;
         case FORCE_OPTION:
-            format = FORMAT_MASK(format | FORCE_MAKE);
+            format = FORMAT_MASK(format | FORCE_MASK);
+            break;
+        case NO_COLOR_OPTION:
+            format = FORMAT_MASK(format | NOCOLOR_MASK);
             break;
         default:
             return -1;

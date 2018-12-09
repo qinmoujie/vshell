@@ -16,11 +16,12 @@ enum FORMAT_MASK
     LINE_MASK = 0x00000080,
     VAR_VALUE_SHOW_MASK = 0x00000100,
     VAR_VALUE_OUT_MASK = 0x00000200,
-    VERSION_MAKE = 0x00000400,
-    FORCE_MAKE = 0x00000800,
-    RUN_MAKE = 0x00001000,
-    PIPELINE_MAKE = 0x00002000,
+    VERSION_MASK = 0x00000400,
+    FORCE_MASK = 0x00000800,
+    RUN_MASK = 0x00001000,
+    PIPELINE_MASK = 0x00002000,
     OUTPUTFILE_MASK = 0x00004000,
+    NOCOLOR_MASK = 0x00008000,
 };
 
 class Out_format
@@ -36,6 +37,8 @@ class Out_format
     static bool is_force_option(const FORMAT_MASK format);
 
     static bool is_run_option(const FORMAT_MASK format);
+
+    static bool is_nocolor_option(const FORMAT_MASK format);
 
     static bool is_outfile_option(const FORMAT_MASK format);
 
