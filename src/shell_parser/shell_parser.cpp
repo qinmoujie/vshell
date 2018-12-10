@@ -314,7 +314,7 @@ bool Shell_parser::parser_loop(qmj::memory_file &inf,
                 qmj::memory_file loop_inf(inf, loop_start, abs_index);
                 if (__parser_imple(loop_inf, ouf) == false)
                     return false;
-                ouf.emplace_back(abs_index, V_FIRST, buf);
+                ouf.emplace_back(abs_index, V_SECOND, buf);
                 return true;
             }
         }

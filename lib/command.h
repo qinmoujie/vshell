@@ -14,6 +14,8 @@ namespace vshell
 namespace vshell_error
 {
 
+void print_info(const string &info_message);
+
 void __print_error_message(const std::string &error_message);
 
 bool error(const std::string &error_messages);

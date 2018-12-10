@@ -12,6 +12,11 @@ using namespace std;
 namespace vshell
 {
 
+void vshell_error::print_info(const string &info_message)
+{
+    cout << "vshell: info :" + info_message << endl;
+}
+
 void vshell_error::__print_error_message(const string &error_message)
 {
     cerr << "vshell: error: " + error_message << endl;

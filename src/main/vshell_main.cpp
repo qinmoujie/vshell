@@ -54,14 +54,22 @@ bool vshell_files(const vector<string> &input_files,
                   const vector<string> &output_files,
                   const vshell::FORMAT_MASK format)
 {
+    bool result = true;
     if (input_files.size() != output_files.size())
         return vshell_error::error("the number of input files is not equal output files");
     for (size_t i = 0; i != input_files.size(); ++i)
     {
-        if (vshell_file(input_files[i], output_files[i], format) == false)
-            return false;
+        vshell_error::print_info(input_files[i] + " ...");
+        if (vshell_file(input_files[i], output_files[i], format) == true)
+        {
+            vshell_error::print_info("done");
+        }
+        else
+        {
+            result = false;
+        }
     }
-    return true;
+    return result;
 }
 
 int main(int argc, char *argv[])
