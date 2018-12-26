@@ -298,7 +298,7 @@ bool Shell_parser::parser_loop(qmj::memory_file &inf,
             return __file_line_error(start_index, "not found 'do'");
         newline.append("\n").append(buf);
     }
-    ouf.emplace_back(start_index, V_FIRST, newline);
+    ouf.emplace_back(start_index, V_SECOND, newline);
 
     size_t stk = 1;
     for (size_t loop_start = (++abs_index); inf.getline(buf); abs_index = inf.get_absindex())
@@ -402,8 +402,8 @@ bool Shell_parser::parser_case(qmj::memory_file &inf,
                 qmj::memory_file esac_inf(inf, case_start, abs_index);
                 if (__parser_imple(esac_inf, ouf) == false)
                     return false;
-                ouf.back().line.append("\n").append(buf);
-                //& ouf.emplace_back(abs_index, V_FIRST, buf);
+                //ouf.back().line.append("\n").append(buf);
+                 ouf.emplace_back(abs_index, V_SECOND, buf);
                 return true;
             }
         }
